@@ -15,7 +15,7 @@ class DBN:
         self._weights_list=[]
         self._NN_list=[]
 
-        if len(argt)==1 and isinstance(argt[0],int):         #so that one does not have to import DBN, RBM and PCN at the same time.
+        if len(argt)==1 and isinstance(argt[0],int): 
             for _ in range(argt[0]-1):
                 self._NN_list.append(RBM())
             self._NN_list.append(PCN())
@@ -24,46 +24,18 @@ class DBN:
 
 
 
-    # NOTE THAT: the algorithm to train a DBN seems wrong, see "learning_deep_architectures_for_AI" chapter 6 and java code for detail.
-    # in java_mnist notice the stopAt parameter, it consists with the learning_deep_architectures_for_AI algorithm.
-
-    # This algorithm is wrong, according to learning_deep_architectures_for_AI, chapter 6, the input data for a RBM is generated everytime from the raw input in each iteration. Note that java mnist code does the same thing: mnist/BinaryMinstDBN.java --> learn method shows in every iteration, a batch (30 item) is chose to be the input for trainer.learn, which is a StackedRBMTrainer.java --> learn method. in StackedRBMTrainer, the learn method generate the input from raw input data layer after layer until the current one, then inputTrainer.learn is called, which is SimpleRBMTrainer.java --> learn method. It implements the RBMUpdate algorithm in learning_deep_architectures_for_AI, which update all weights and biases only once.
-
     def train(self, data, out, num_hidden=4, train_iter=5000, learning_rate=0.01):
 
-        # if self._NN_list == 1, that should be a PCN, #so one can still use 1-layer DBN as a PCN without even import it
         if len(self._NN_list) < 1:
             raise Exception
 
         if not isinstance(self._NN_list[-1], PCN):
             raise Exception
 
-        #make the training data and output random, good for sequenced data.
-        #NO the result is very bad, is suffling bad for training??
-#        tmp=[ x for x in zip(data,out) ]
-#        np.random.shuffle(tmp)
-#        tmp=[ x for x in zip(*tmp) ]
-#        in_data=tmp[0]
-#        out_data=tmp[1]
-
         in_data=data
         out_data=out
 
         print('start training DBN with {0} input, {1} hidden layer and {2} output'.format(len(in_data), num_hidden, len(out_data)))
-
-#        for odr, rbm in enumerate(self._NN_list[:-1]):
-#            print('training the {0}th layer of DBN: {1}'.format(odr+1,rbm))
-#            rbm.train(in_data, num_hidden, train_iter, learning_rate)
-#            
-#            in_data=data
-#            for i in range(odr+1):
-#                trained_rbm=self._NN_list[i]
-#                in_data=trained_rbm.forward_data(in_data)
-#
-#        pcn=self._NN_list[-1]
-#        print('training the PCN layer')
-#        pcn.train(in_data, out, train_iter, learning_rate)
-
 
         num_visible=len(in_data[0])
         for odr, nn in enumerate(self._NN_list[:-1]):
@@ -86,12 +58,6 @@ class DBN:
                 kwargs={'dinput':_dinput, 'doutput':_doutput, 'learning_rate': learning_rate}
                 nn.iter_update(**kwargs)
 
-
-#        pcn=self._NN_list[-1]
-#        print('training the PCN layer')
-#        for trained_rbm in self._NN_list[:-1]:
-#            in_data=trained_rbm.forward_data(in_data)
-#        pcn.train(in_data, out, train_iter, learning_rate)
 
     def save(self, filename):
         with open(filename,'wb') as fd:

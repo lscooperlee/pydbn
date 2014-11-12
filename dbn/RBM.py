@@ -25,16 +25,6 @@ class RBM(NN):
         param={ 'weights':self._weights, 'bias_visible':self._bias_visible, 'bias_hidden':self._bias_hidden }
         return param
 
-    def forward_data(self, data):
-        """
-        this function is used to forward the whole dataset, not just one vector in the dataset, thus it loops all vectors in the dataset and it uses self.forward function to forward every vector.
-        this function is basically used in DBN training, when getting the whole inputset for the next hidden layer.
-        """
-        out_array=[]
-        for i in data:
-            out_array.append(self.forward(i).reshape(-1))    # it is a [[num,num]] format, which is a matrix or 2d array
-        return np.array(out_array)
-
 
     def forward(self,visible_vector):
         """
@@ -49,7 +39,7 @@ class RBM(NN):
         self._bias_hidden=np.random.normal(scale=0.1, size=(1,num_hidden))
 
 
-    def iter_update(self, dinput, learning_rate, **kwargs):
+    def iter_update(self, dinput, learning_rate, doutput=None):
         self.__rbm_update(dinput, learning_rate)
 
 
@@ -61,7 +51,6 @@ class RBM(NN):
             for _data in data:
                 self.__rbm_update(_data, learning_rate)
 
-            # we add all weights, bias_visible and bias_hidden over all data in one iteration, so have to average it for this round.
             self._weights=self._weights/len(data)
             self._bias_visible=self._bias_visible/len(data)
             self._bias_hidden=self._bias_hidden/len(data)
@@ -78,7 +67,6 @@ class RBM(NN):
                 self.__rbm_update(_data, learning_rate)
 
 
-
     def __rbm_update(self, _data, learning_rate):
 
         visible0=np.matrix(_data)           # change 1d array to 2d array, namely matrix
@@ -93,7 +81,6 @@ class RBM(NN):
 
         self._weights+=learning_rate*(np.dot(visible0.T, prob0_hidden_given_visible)-np.dot(prob1_visible_given_hidden.T, prob1_hidden_given_visible))
 
-        #bias_visible and bias_hidden should be multipled by learning_rate too
         self._bias_visible+=learning_rate*(visible0-prob1_visible_given_hidden)
 
         self._bias_hidden+=learning_rate*(prob0_hidden_given_visible-prob1_hidden_given_visible)

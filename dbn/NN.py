@@ -7,9 +7,6 @@ class NN:
     def __init__(self):
         pass
 
-#    def iter_update(self, **kwargs):
-#        pass
-
     def sigmond(self,x):
         return 1.0/(1.0+np.exp(-x))
 
