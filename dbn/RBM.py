@@ -17,9 +17,9 @@ class RBM(NN):
         self.__train_1step_1batch_basic(data, train_iter, learning_rate)
 
     def set_param(self, param):
-        self._weights=param['weights']
-        self._bias_visible=param['bias_visible']
-        self._bias_hidden=param['bias_hidden']
+        self._weights=np.array(param['weights'])
+        self._bias_visible=np.array(param['bias_visible'])
+        self._bias_hidden=np.array(param['bias_hidden'])
 
     def get_param(self):
         param={ 'weights':self._weights, 'bias_visible':self._bias_visible, 'bias_hidden':self._bias_hidden }

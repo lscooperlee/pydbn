@@ -20,8 +20,8 @@ class PCN(NN):
 
 
     def set_param(self, param):
-        self._weights=param['weights']
-        self._bias=param['bias']
+        self._weights=np.array(param['weights'])
+        self._bias=np.array(param['bias'])
 
     def get_param(self):
         param={'weights':self._weights, 'bias':self._bias}

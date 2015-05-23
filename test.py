@@ -22,6 +22,7 @@ def test_dbn():
     test_data=np.array([1,0,0,0,0,0])
     d=c.forward(test_data)
     print(d)
+    c.savejson('/tmp/dbntest.json')
 
 
 def test_pcn():
@@ -30,6 +31,7 @@ def test_pcn():
     output=np.array([[0,1],[0,1],[1,0],[1,0]])   
     s.train(training_data,output,train_iter=5)
     print(s)
+    print(s.get_param())
 
 
 def test_rbm():
@@ -37,6 +39,9 @@ def test_rbm():
     training_data = np.array([[1,1,1,0,0,0],[1,0,1,0,0,0],[1,1,1,0,0,0],[0,0,1,1,1,0], [0,0,1,1,0,0],[0,0,1,1,1,0]])
     s.train(training_data,train_iter=5)
     print(s)
+    print(s.get_param())
+    s.savejson('/tmp/tmp.json')
+
 
 
 if __name__=='__main__':

@@ -3,6 +3,7 @@
 import numpy as np
 import random
 import pickle
+import json
 
 from .RBM import RBM
 from .PCN import PCN
@@ -13,15 +14,17 @@ class DBN:
 
     def __init__(self, *argt):
         self._weights_list=[]
-        self._NN_list=[]
 
         if len(argt)==1 and isinstance(argt[0],int): 
-            for _ in range(argt[0]-1):
-                self._NN_list.append(RBM())
-            self._NN_list.append(PCN())
+            self._update_NN_list(argt[0])
         else:
             self._NN_list=list(argt)
 
+    def _update_NN_list(self,num):
+        self._NN_list=[]
+        for _ in range(num-1):
+            self._NN_list.append(RBM())
+        self._NN_list.append(PCN())
 
 
     def train(self, data, out, num_hidden=4, train_iter=5000, learning_rate=0.01):
@@ -67,8 +70,37 @@ class DBN:
 
     def load(self, filename):
         with open(filename,'rb') as fd:
+            loadlst=[]
+            while True:
+                try:
+                    loadlst.append(pickle.load(fd))
+                except:
+                    break
+
+            self._update_NN_list(len(loadlst))
+            for i,nn in enumerate(self._NN_list):
+                nn.set_param(loadlst[i])
+
+    def savejson(self,filename):
+        with open(filename, 'w') as fd:
+            lst=[]
             for nn in self._NN_list:
-                nn.set_param(pickle.load(fd))
+                newdict={}
+                param=nn.get_param()
+                for i in param.keys():
+                    newdict[i]=np.round(param[i],decimals=2).tolist()
+                    #newdict[i]=param[i].tolist()
+                lst.append(newdict)
+            json.dump(lst,fd)
+
+    def loadjson(self, filename):
+        with open(filename, 'r') as fd:
+            loadlst=json.load(fd)
+
+            self._update_NN_list(len(loadlst))
+            for i,nn in enumerate(self._NN_list):
+                nn.set_param(loadlst[i])
+
 
 
     def forward(self, input_vector):
