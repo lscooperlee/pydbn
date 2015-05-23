@@ -74,7 +74,7 @@ if __name__=='__main__':
             lst.append(z)
         
         train_labels=np.array(lst)
-        dbn.train(train_image, train_labels, num_hidden=500, train_iter=30000,learning_rate=0.1)
+        dbn.train(train_image, train_labels, num_hidden=500, train_iter=60000,learning_rate=0.1)
 
         if filename.endswith('json'):
             dbn.savejson(filename)
